@@ -1,0 +1,1391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Meeko AI Editor - Next-Gen Photo & Looping Video Studio</title>
+  <style>
+    :root {
+      --bg-dark: #071318;
+      --card-bg: #0c1d24;
+      --card-border: #16323d;
+      --input-bg: #08151b;
+      --primary: #00e5ff;
+      --accent-purple: #8e24aa;
+      --accent-green: #00c853;
+      --text-main: #ffffff;
+      --text-muted: #90a4ae;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background: radial-gradient(circle at top, #0f2c38 0%, var(--bg-dark) 60%);
+      color: var(--text-main);
+      padding: 16px;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 540px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    /* Animated Colorful Glowing Header */
+    .header {
+      text-align: center;
+      padding: 14px 0;
+    }
+
+    @keyframes rainbowGlow {
+      0% {
+        background-position: 0% 50%;
+        filter: drop-shadow(0 0 12px rgba(0, 229, 255, 0.85));
+      }
+      33% {
+        background-position: 50% 50%;
+        filter: drop-shadow(0 0 15px rgba(255, 64, 129, 0.9));
+      }
+      66% {
+        background-position: 100% 50%;
+        filter: drop-shadow(0 0 15px rgba(255, 215, 64, 0.9));
+      }
+      100% {
+        background-position: 0% 50%;
+        filter: drop-shadow(0 0 12px rgba(0, 229, 255, 0.85));
+      }
+    }
+
+    @keyframes boxPulse {
+      0% { border-color: #00e5ff; box-shadow: 0 0 22px rgba(0, 229, 255, 0.5); }
+      33% { border-color: #ff4081; box-shadow: 0 0 24px rgba(255, 64, 129, 0.55); }
+      66% { border-color: #ffd740; box-shadow: 0 0 24px rgba(255, 215, 64, 0.55); }
+      100% { border-color: #00e5ff; box-shadow: 0 0 22px rgba(0, 229, 255, 0.5); }
+    }
+
+    .logo-box {
+      width: 72px;
+      height: 72px;
+      margin: 0 auto 12px;
+      border-radius: 20px;
+      background: linear-gradient(145deg, #103240, #071921);
+      border: 2.5px solid var(--primary);
+      animation: boxPulse 4s infinite linear;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 34px;
+      font-weight: 900;
+      background-image: linear-gradient(270deg, #00e5ff, #ff4081, #ffd740, #69f0ae, #00e5ff);
+      background-size: 400% 400%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .logo-wrap {
+      width: 74px;
+      height: 74px;
+      margin: 0 auto 12px;
+      border-radius: 20px;
+      background: linear-gradient(145deg, #0d2b36, #071921);
+      border: 2.5px solid var(--primary);
+      animation: boxPulse 4s infinite linear;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .logo-wrap span {
+      font-size: 34px;
+      font-weight: 900;
+      background: linear-gradient(270deg, #00e5ff, #ff4081, #ffd740, #69f0ae, #e040fb, #00e5ff);
+      background-size: 400% 400%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: rainbowGlow 4s ease infinite;
+    }
+
+    .header h1 {
+      font-size: 31px;
+      font-weight: 900;
+      letter-spacing: 0.8px;
+      background: linear-gradient(270deg, #00e5ff, #ff4081, #ffd740, #69f0ae, #e040fb, #00e5ff);
+      background-size: 400% 400%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: rainbowGlow 4s ease infinite;
+    }
+
+    .header p {
+      font-size: 13px;
+      color: #b0bec5;
+      margin-top: 5px;
+    }
+
+    /* Cards */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      padding: 16px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      gap: 8px;
+    }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .badge {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 5px 10px;
+      border-radius: 20px;
+      background: rgba(0, 200, 83, 0.15);
+      color: #69f0ae;
+      border: 1px solid rgba(105, 240, 174, 0.4);
+      white-space: nowrap;
+    }
+
+    .badge.online {
+      background: rgba(0, 229, 255, 0.15);
+      color: var(--primary);
+      border-color: var(--primary);
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    label {
+      display: block;
+      font-size: 12px;
+      color: #cfd8dc;
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+
+    select, input[type="text"], input[type="password"], input[type="number"] {
+      width: 100%;
+      background: var(--input-bg);
+      border: 1px solid #214554;
+      color: #fff;
+      padding: 11px 12px;
+      border-radius: 12px;
+      font-size: 13px;
+      outline: none;
+    }
+
+    select:focus, input:focus {
+      border-color: var(--primary);
+    }
+
+    .btn {
+      border: none;
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: 0.2s ease;
+      text-decoration: none;
+    }
+
+    .btn:active { transform: scale(0.98); }
+
+    .btn-cyan {
+      background: linear-gradient(135deg, #00e5ff, #0097a7);
+      color: #03151a;
+    }
+
+    .btn-dark-red {
+      background: #2b1424;
+      color: #ff80ab;
+      border: 1px solid #5c2349;
+    }
+
+    .free-api-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .api-chip {
+      font-size: 11px;
+      padding: 5px 9px;
+      border-radius: 8px;
+      background: #102a35;
+      color: #80deea;
+      border: 1px solid #1e4b5e;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .api-chip:hover {
+      background: var(--primary);
+      color: #000;
+    }
+
+    .upload-box {
+      border: 1.5px dashed #265366;
+      background: rgba(8, 21, 27, 0.7);
+      border-radius: 14px;
+      padding: 18px 10px;
+      text-align: center;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .upload-box:hover {
+      border-color: var(--primary);
+      background: rgba(0, 229, 255, 0.06);
+    }
+
+    .upload-box .icon { font-size: 26px; margin-bottom: 6px; }
+    .upload-box strong { display: block; font-size: 14px; color: #fff; }
+    .upload-box span { font-size: 11px; color: var(--text-muted); }
+
+    .slider-box {
+      background: var(--input-bg);
+      border: 1px solid #1b3b48;
+      border-radius: 12px;
+      padding: 12px;
+      margin-top: 12px;
+    }
+
+    .slider-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--primary);
+      cursor: pointer;
+    }
+
+    .slider-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .loop-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 7px;
+      margin-top: 8px;
+    }
+
+    .loop-btn {
+      background: var(--input-bg);
+      border: 1px solid #1f4454;
+      color: #cfd8dc;
+      padding: 9px 0;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .loop-btn.active {
+      background: rgba(0, 229, 255, 0.18);
+      border-color: var(--primary);
+      color: var(--primary);
+      box-shadow: 0 0 10px rgba(0, 229, 255, 0.25);
+    }
+
+    .custom-loop-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    /* Visual Effects Grid (Single Select Switch) */
+    .effects-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .effect-pill {
+      background: var(--input-bg);
+      border: 1px solid #204454;
+      color: #e0f7fa;
+      padding: 9px 10px;
+      border-radius: 11px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      text-align: left;
+      transition: 0.15s;
+    }
+
+    .effect-pill.active {
+      background: rgba(0, 229, 255, 0.22);
+      border-color: var(--primary);
+      color: #fff;
+      box-shadow: 0 0 12px rgba(0, 229, 255, 0.35);
+    }
+
+    .caption-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    /* Live Preview Canvas */
+    .preview-wrapper {
+      position: relative;
+      background: #040b0e;
+      border-radius: 14px;
+      border: 1px solid #1c3d4b;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 360px;
+    }
+
+    .live-badge {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(4, 15, 20, 0.85);
+      border: 1px solid var(--primary);
+      color: var(--primary);
+      font-size: 10px;
+      font-weight: 800;
+      padding: 4px 9px;
+      border-radius: 20px;
+      z-index: 5;
+    }
+
+    canvas {
+      max-width: 100%;
+      max-height: 460px;
+      display: block;
+      background: #061218;
+    }
+
+    /* Live Zoom Box Right Under Photo */
+    .live-zoom-card {
+      background: linear-gradient(145deg, #091c24, #061319);
+      border: 1.5px solid #00e5ff;
+      border-radius: 14px;
+      padding: 12px;
+      margin-top: 12px;
+      box-shadow: 0 0 14px rgba(0, 229, 255, 0.15);
+    }
+
+    .btn-gradient-video {
+      background: linear-gradient(90deg, #00e5ff, #8e24aa);
+      color: #fff;
+      font-size: 14px;
+      padding: 14px;
+    }
+
+    .btn-gradient-photo {
+      background: linear-gradient(90deg, #00c853, #00897b);
+      color: #fff;
+      font-size: 14px;
+      padding: 14px;
+    }
+
+    .progress-bar-wrap {
+      display: none;
+      margin-top: 12px;
+      background: #071318;
+      border-radius: 10px;
+      padding: 10px;
+      border: 1px solid var(--primary);
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 8px;
+      background: #132f3b;
+      border-radius: 6px;
+      overflow: hidden;
+      margin-top: 6px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #00e5ff, #00c853);
+      transition: width 0.2s;
+    }
+
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 10px;
+      font-size: 12px;
+      color: #b0bec5;
+      cursor: pointer;
+    }
+
+    .footer {
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <!-- Colorful Glowing Header -->
+  <div class="header">
+    <div class="logo-wrap"><span>M</span></div>
+    <h1>Meeko AI Editor</h1>
+    <p>Next-Gen Offline Photo Studio + Looping Audio &amp; Visual Effects</p>
+  </div>
+
+  <!-- 1. External AI API Connector -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">⚡ 1. External AI API Connector (Optional)</div>
+      <div class="badge" id="engineStatus">Offline Engine Ready</div>
+    </div>
+
+    <div class="grid-2">
+      <div>
+        <label>Select AI Provider</label>
+        <select id="aiProvider">
+          <option value="offline">Built-in Offline AI (Free)</option>
+          <option value="gemini">Google Gemini (Fast &amp; Free)</option>
+          <option value="groq">Groq Llama-3 (Ultra Fast)</option>
+          <option value="openrouter">OpenRouter (All Models)</option>
+          <option value="openai">OpenAI (GPT-4o / Mini)</option>
+          <option value="huggingface">Hugging Face Inference</option>
+        </select>
+      </div>
+      <div>
+        <label>Paste API Key</label>
+        <input type="password" id="apiKeyInput" placeholder="sk-... or AIza..." />
+      </div>
+    </div>
+
+    <div class="grid-2" style="margin-top: 10px;">
+      <button class="btn btn-cyan" onclick="saveApiKey()">💾 Save &amp; Connect API</button>
+      <button class="btn btn-dark-red" onclick="clearApiKey()">🗑️ Clear Key</button>
+    </div>
+
+    <div style="margin-top: 12px; padding-top: 10px; border-top: 1px solid #16323d;">
+      <div style="font-size: 12px; color: #80deea; font-weight: 700;">🔑 Get Free API Key (1-Click Official Links):</div>
+      <div class="free-api-links">
+        <a href="https://aistudio.google.com/app/apikey" target="_blank" class="api-chip">Get Free Gemini API ↗</a>
+        <a href="https://console.groq.com/keys" target="_blank" class="api-chip">Get Free Groq API ↗</a>
+        <a href="https://openrouter.ai/keys" target="_blank" class="api-chip">Get Free OpenRouter ↗</a>
+        <a href="https://huggingface.co/settings/tokens" target="_blank" class="api-chip">Get Free HuggingFace ↗</a>
+      </div>
+      <p style="font-size: 11px; color: var(--text-muted); margin-top: 6px;">
+        بغیر API کے بھی آف لائن فوٹو ایڈیٹنگ، فلٹرز، اینیمیشن اور ویڈیو ایکسپورٹ 100% کام کرتے ہیں۔
+      </p>
+    </div>
+  </div>
+
+  <!-- 2. Add Photo, Audio & Effects -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">🎬 2. Add Photo, Audio &amp; Repeat Loop</div>
+      <span style="color: var(--primary); font-weight: 700; font-size: 13px;" id="totalDurationDisplay">00:00</span>
+    </div>
+
+    <div class="grid-2">
+      <div class="upload-box" onclick="document.getElementById('imageInput').click()">
+        <div class="icon">🖼️</div>
+        <strong id="imgLabel">Add Image</strong>
+        <span>Tap to choose photo</span>
+        <input type="file" id="imageInput" accept="image/*" hidden onchange="handleImageUpload(event)" />
+      </div>
+
+      <div class="upload-box" onclick="document.getElementById('audioInput').click()">
+        <div class="icon">🎵</div>
+        <strong id="audioLabel">Add Audio</strong>
+        <span>Tap to choose song</span>
+        <input type="file" id="audioInput" accept="audio/*" hidden onchange="handleAudioUpload(event)" />
+      </div>
+    </div>
+
+    <!-- Offline Photo Enhancement -->
+    <div class="slider-box">
+      <div class="slider-header">
+        <span>✨ Offline Photo Clarity &amp; Enhance (تصویر صاف کریں)</span>
+        <span style="color: var(--primary);" id="enhanceVal">Auto HD</span>
+      </div>
+      <div class="grid-2" style="gap: 8px; margin-top: 6px;">
+        <div>
+          <label style="font-size: 11px;">Brightness: <span id="brightText">105%</span></label>
+          <input type="range" id="brightSlider" min="70" max="150" value="105" oninput="updatePhotoAdjust()" />
+        </div>
+        <div>
+          <label style="font-size: 11px;">Contrast &amp; Sharp: <span id="contrastText">110%</span></label>
+          <input type="range" id="contrastSlider" min="70" max="160" value="110" oninput="updatePhotoAdjust()" />
+        </div>
+      </div>
+      <div style="margin-top: 8px;">
+        <label style="font-size: 11px;">Color &amp; Beauty Glow: <span id="satText">115%</span></label>
+        <input type="range" id="satSlider" min="0" max="180" value="115" oninput="updatePhotoAdjust()" />
+      </div>
+    </div>
+
+    <label class="checkbox-row">
+      <input type="checkbox" id="cleanAudioCheck" checked />
+      <span>🎙️ Crystal Clear Audio Mode (آواز صاف کریں اور شور کم کریں)</span>
+    </label>
+
+    <!-- Audio Repeat Loop -->
+    <div style="margin-top: 14px;">
+      <label>🔁 Repeat Audio on Photo (1x up to 10x)</label>
+      <div class="loop-grid" id="loopButtons">
+        <button class="loop-btn active" onclick="setLoop(1, this)">1x</button>
+        <button class="loop-btn" onclick="setLoop(2, this)">2x</button>
+        <button class="loop-btn" onclick="setLoop(3, this)">3x</button>
+        <button class="loop-btn" onclick="setLoop(4, this)">4x</button>
+        <button class="loop-btn" onclick="setLoop(5, this)">5x</button>
+        <button class="loop-btn" onclick="setLoop(6, this)">6x</button>
+        <button class="loop-btn" onclick="setLoop(7, this)">7x</button>
+        <button class="loop-btn" onclick="setLoop(8, this)">8x</button>
+        <button class="loop-btn" onclick="setLoop(9, this)">9x</button>
+        <button class="loop-btn" onclick="setLoop(10, this)">10x</button>
+      </div>
+
+      <label style="margin-top: 10px;">Custom repeats (11 to 10,000 for Long YouTube Videos)</label>
+      <div class="custom-loop-row">
+        <input type="number" id="customLoopInput" min="1" max="10000" placeholder="مثلاً 100 یا 1000" />
+        <button class="btn btn-cyan" onclick="applyCustomLoop()">Apply</button>
+      </div>
+    </div>
+
+    <!-- Single-Select Visual Effects (Selecting a new one replaces the old one) -->
+    <div style="margin-top: 16px;">
+      <label>✨ Choose Visual Effect (نیا منتخب کرنے پر پہلا خود ختم ہو جائے گا)</label>
+      <div class="effects-grid" id="effectsContainer">
+        <button class="effect-pill active" onclick="selectEffect('snowfall', this)">❄️ Snowfall (برف باری)</button>
+        <button class="effect-pill" onclick="selectEffect('roses', this)">🌹 Red Roses (گلاب کے پھول)</button>
+        <button class="effect-pill" onclick="selectEffect('sakura', this)">🌸 Pink Flowers (گلابی پھول)</button>
+        <button class="effect-pill" onclick="selectEffect('sunflowers', this)">🌻 Yellow Flowers (پیلا پھول)</button>
+        <button class="effect-pill" onclick="selectEffect('clouds', this)">☁️ Passing Clouds (گزرتے بادل)</button>
+        <button class="effect-pill" onclick="selectEffect('rain', this)">🌧️ Heavy Rain (تیز بارش)</button>
+        <button class="effect-pill" onclick="selectEffect('butterflies', this)">🦋 Butterflies (تتلیاں)</button>
+        <button class="effect-pill" onclick="selectEffect('leaves', this)">🍁 Autumn Leaves (خزاں کے پتے)</button>
+        <button class="effect-pill" onclick="selectEffect('fireflies', this)">✨ Golden Fireflies (جگنو)</button>
+        <button class="effect-pill" onclick="selectEffect('stars', this)">🌟 Twinkling Stars (ستارے)</button>
+        <button class="effect-pill" onclick="selectEffect('bubbles', this)">🫧 Floating Bubbles (بلبلے)</button>
+        <button class="effect-pill" onclick="selectEffect('feathers', this)">🪶 White Feathers (سفید پر)</button>
+        <button class="effect-pill" onclick="selectEffect('hearts', this)">💖 Floating Hearts (دل)</button>
+        <button class="effect-pill" onclick="selectEffect('confetti', this)">🎉 Party Confetti (رنگین کاغذ)</button>
+        <button class="effect-pill" onclick="selectEffect('glow', this)">☀️ Sun Rays Glow (دھوپ)</button>
+        <button class="effect-pill" onclick="selectEffect('fog', this)">🌫️ Dreamy Fog (دھند)</button>
+        <button class="effect-pill" onclick="selectEffect('none', this)">🚫 None (کوئی نہیں)</button>
+      </div>
+    </div>
+
+    <!-- Filters & Frame Size -->
+    <div class="grid-2" style="margin-top: 16px;">
+      <div>
+        <label>🪄 Photo Quality Filter</label>
+        <select id="photoFilter" onchange="updatePhotoAdjust()">
+          <option value="hd">HD Crystal Clear (صاف تصویر)</option>
+          <option value="none">Original Photo</option>
+          <option value="vivid">Vibrant Studio Color</option>
+          <option value="warm">Warm Golden Sunset</option>
+          <option value="cinematic">Cinematic Moody</option>
+          <option value="soft">Soft Portrait Smooth</option>
+          <option value="bw">Classic Black &amp; White</option>
+        </select>
+      </div>
+      <div>
+        <label>📐 Video Frame Size</label>
+        <select id="aspectRatio" onchange="changeAspectRatio()">
+          <option value="9:16">9:16 (TikTok / Reels / Shorts)</option>
+          <option value="16:9">16:9 (YouTube HD Video)</option>
+          <option value="1:1">1:1 (Instagram Square)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Write Text / AI Caption -->
+    <div style="margin-top: 14px;">
+      <label>✍️ Write Text / Poetry on Photo</label>
+      <div class="caption-row">
+        <input type="text" id="overlayText" placeholder="Write Urdu or English text..." oninput="drawFrame()" />
+        <button class="btn btn-cyan" id="aiCaptionBtn" onclick="generateAICaption()">🤖 AI Caption</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Live Preview & Export -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">🎥 3. Live Preview &amp; Export Video</div>
+      <span style="color: var(--primary); font-weight: 700; font-size: 13px;" id="loopBadge">Loop: 1x</span>
+    </div>
+
+    <div class="preview-wrapper">
+      <div class="live-badge">● LIVE PREVIEW</div>
+      <canvas id="studioCanvas" width="540" height="960"></canvas>
+    </div>
+
+    <!-- Image Size Slider Right Under Live Preview -->
+    <div class="live-zoom-card">
+      <div class="slider-header">
+        <span>🔍 تصویر کا سائز چھوٹا یا بڑا کریں (Live Photo Zoom)</span>
+        <span style="color: var(--primary); font-weight: 800;" id="zoomVal">100%</span>
+      </div>
+      <input type="range" id="zoomSlider" min="40" max="180" value="100" oninput="updateZoom(this.value)" />
+      <div class="slider-labels">
+        <span>چھوٹا 40%</span>
+        <span>فریم کے مطابق 100%</span>
+        <span>بڑا 180%</span>
+      </div>
+    </div>
+
+    <div class="grid-2" style="margin-top: 14px;">
+      <button class="btn" style="background: #102a35; color: var(--primary); border: 1px solid #1f4d61;" id="playAudioBtn" onclick="toggleAudioPreview()">
+        ▶️ Play Audio Preview
+      </button>
+      <select id="exportQuality">
+        <option value="720">720p HD (Faster)</option>
+        <option value="1080">1080p Full HD (Ultra Crisp)</option>
+      </select>
+    </div>
+
+    <div class="grid-2" style="margin-top: 10px;">
+      <button class="btn btn-gradient-video" onclick="exportVideo()">🎬 Create &amp; Download Video</button>
+      <button class="btn btn-gradient-photo" onclick="saveHDPhoto()">📸 Save HD Photo</button>
+    </div>
+
+    <div class="progress-bar-wrap" id="exportProgressBox">
+      <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: 700;">
+        <span id="exportStatusText">Rendering Video...</span>
+        <span id="exportPercentText">0%</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="exportProgressFill"></div>
+      </div>
+      <button class="btn btn-dark-red" style="width: 100%; margin-top: 8px; padding: 6px;" onclick="cancelExport()">Stop &amp; Save Now</button>
+    </div>
+  </div>
+
+  <!-- Clean About Section (Contact Us Removed) -->
+  <div class="card footer">
+    <h3 style="color: #fff; margin-bottom: 6px;">About Meeko AI Editor</h3>
+    <p>
+      Meeko AI Editor is a fast, browser-based offline &amp; AI-ready photo and audio video studio.
+      Combine your favorite images with music tracks, repeat audio loops from 1x up to 10,000x for YouTube,
+      apply atmospheric visual effects, and export crisp 720p or 1080p HD videos directly on your device without server delays.
+    </p>
+    <p style="margin-top: 8px;">© 2026 Meeko AI Editor. All Rights Reserved.</p>
+  </div>
+</div>
+
+<audio id="audioPlayer" crossorigin="anonymous"></audio>
+
+<script>
+  const canvas = document.getElementById('studioCanvas');
+  const ctx = canvas.getContext('2d');
+  let uploadedImage = null;
+  let audioFile = null;
+  let audioDuration = 0;
+  let loopCount = 1;
+  let currentEffect = 'snowfall';
+  let imageZoom = 100;
+  let isPlayingAudio = false;
+  let currentLoopIteration = 0;
+  let particles = [];
+  let clouds = [];
+  let isExporting = false;
+  let mediaRecorder = null;
+  let exportCancelled = false;
+
+  const offlineCaptions = [
+    "خاموشیوں میں بھی ایک کہانی ہوتی ہے ✨",
+    "وقت بدلتا ہے، یادیں ہمیشہ زندہ رہتی ہیں 🌸",
+    "سکونِ قلب کے لیے ایک خوبصورت شام ❄️",
+    "Every picture tells a silent story ✨",
+    "Lost in the beauty of peaceful moments 🌙",
+    "بارش کی بوندیں اور پرانی یادیں 🌧️"
+  ];
+
+  window.addEventListener('DOMContentLoaded', () => {
+    const savedKey = localStorage.getItem('meeko_api_key');
+    const savedProvider = localStorage.getItem('meeko_ai_provider');
+    if (savedProvider) document.getElementById('aiProvider').value = savedProvider;
+    if (savedKey) {
+      document.getElementById('apiKeyInput').value = savedKey;
+      updateApiBadge(true, savedProvider);
+    }
+    initParticles();
+    initClouds();
+    animateLoop();
+  });
+
+  function updateApiBadge(connected, provider) {
+    const badge = document.getElementById('engineStatus');
+    if (connected && provider !== 'offline') {
+      badge.textContent = `Connected: ${provider.toUpperCase()}`;
+      badge.classList.add('online');
+    } else {
+      badge.textContent = 'Offline Engine Ready';
+      badge.classList.remove('online');
+    }
+  }
+
+  function saveApiKey() {
+    const provider = document.getElementById('aiProvider').value;
+    const key = document.getElementById('apiKeyInput').value.trim();
+    if (provider !== 'offline' && !key) {
+      alert('براہِ کرم API Key پیسٹ کریں یا Get Free API بٹن سے مفت حاصل کریں۔');
+      return;
+    }
+    localStorage.setItem('meeko_ai_provider', provider);
+    localStorage.setItem('meeko_api_key', key);
+    updateApiBadge(true, provider);
+    alert('✅ API کامیابی سے محفوظ ہو گئی ہے!');
+  }
+
+  function clearApiKey() {
+    localStorage.removeItem('meeko_api_key');
+    localStorage.setItem('meeko_ai_provider', 'offline');
+    document.getElementById('apiKeyInput').value = '';
+    document.getElementById('aiProvider').value = 'offline';
+    updateApiBadge(false, 'offline');
+  }
+
+  function handleImageUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const img = new Image();
+      img.onload = function() {
+        uploadedImage = img;
+        document.getElementById('imgLabel').textContent = '✅ Photo Loaded';
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function handleAudioUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    audioFile = file;
+    const url = URL.createObjectURL(file);
+    const audio = document.getElementById('audioPlayer');
+    audio.src = url;
+    audio.onloadedmetadata = () => {
+      audioDuration = audio.duration || 10;
+      document.getElementById('audioLabel').textContent = '✅ ' + file.name.slice(0, 14) + '...';
+      updateDurationDisplay();
+    };
+  }
+
+  function updateDurationDisplay() {
+    const totalSec = Math.round(audioDuration * loopCount);
+    const hrs = Math.floor(totalSec / 3600);
+    const mins = Math.floor((totalSec % 3600) / 60);
+    const secs = totalSec % 60;
+    const formatted = hrs > 0
+      ? `${hrs}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`
+      : `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+    document.getElementById('totalDurationDisplay').textContent = formatted;
+  }
+
+  function setLoop(val, btn) {
+    loopCount = val;
+    document.querySelectorAll('.loop-btn').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    document.getElementById('loopBadge').textContent = `Loop: ${loopCount}x`;
+    updateDurationDisplay();
+  }
+
+  function applyCustomLoop() {
+    const val = parseInt(document.getElementById('customLoopInput').value);
+    if (!val || val < 1 || val > 10000) {
+      alert('براہِ کرم 1 سے 10,000 کے درمیان نمبر درج کریں۔');
+      return;
+    }
+    document.querySelectorAll('.loop-btn').forEach(b => b.classList.remove('active'));
+    loopCount = val;
+    document.getElementById('loopBadge').textContent = `Loop: ${loopCount}x`;
+    updateDurationDisplay();
+  }
+
+  function updateZoom(val) {
+    imageZoom = parseInt(val);
+    document.getElementById('zoomVal').textContent = val + '%';
+  }
+
+  function updatePhotoAdjust() {
+    document.getElementById('brightText').textContent = document.getElementById('brightSlider').value + '%';
+    document.getElementById('contrastText').textContent = document.getElementById('contrastSlider').value + '%';
+    document.getElementById('satText').textContent = document.getElementById('satSlider').value + '%';
+  }
+
+  function changeAspectRatio() {
+    const ratio = document.getElementById('aspectRatio').value;
+    const q = parseInt(document.getElementById('exportQuality').value);
+    const scale = q === 1080 ? 1.5 : 1;
+    if (ratio === '9:16') {
+      canvas.width = Math.round(540 * scale);
+      canvas.height = Math.round(960 * scale);
+    } else if (ratio === '16:9') {
+      canvas.width = Math.round(960 * scale);
+      canvas.height = Math.round(540 * scale);
+    } else {
+      canvas.width = Math.round(720 * scale);
+      canvas.height = Math.round(720 * scale);
+    }
+    initParticles();
+    initClouds();
+  }
+
+  // Single-Select Effect Switcher (Clicking a new effect completely removes the old one)
+  function selectEffect(effectName, btn) {
+    currentEffect = effectName;
+    document.querySelectorAll('.effect-pill').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    particles = [];
+    clouds = [];
+    if (effectName === 'clouds' || effectName === 'fog') {
+      initClouds();
+    } else if (effectName !== 'none' && effectName !== 'glow') {
+      initParticles();
+    }
+  }
+
+  function initParticles() {
+    particles = [];
+    const count = 65;
+    const confettiColors = ['#ff4081', '#00e5ff', '#ffd740', '#69f0ae', '#e040fb', '#ff6e40'];
+    for (let i = 0; i < count; i++) {
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        r: Math.random() * 4.5 + 2.5,
+        speedY: Math.random() * 2.2 + 0.8,
+        speedX: (Math.random() - 0.5) * 1.4,
+        angle: Math.random() * Math.PI * 2,
+        spin: (Math.random() - 0.5) * 0.06,
+        alpha: Math.random() * 0.7 + 0.3,
+        phase: Math.random() * 10,
+        confettiColor: confettiColors[Math.floor(Math.random() * confettiColors.length)]
+      });
+    }
+  }
+
+  function initClouds() {
+    clouds = [];
+    for (let i = 0; i < 6; i++) {
+      clouds.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * (canvas.height * 0.65),
+        size: Math.random() * 95 + 75,
+        speed: Math.random() * 0.7 + 0.3
+      });
+    }
+  }
+
+  function getCanvasFilter() {
+    const bright = document.getElementById('brightSlider').value;
+    const contrast = document.getElementById('contrastSlider').value;
+    const sat = document.getElementById('satSlider').value;
+    const preset = document.getElementById('photoFilter').value;
+
+    let extra = '';
+    if (preset === 'hd') extra = 'contrast(108%) saturate(112%)';
+    if (preset === 'vivid') extra = 'saturate(135%) contrast(112%)';
+    if (preset === 'warm') extra = 'sepia(25%) saturate(125%) brightness(105%)';
+    if (preset === 'cinematic') extra = 'contrast(125%) saturate(85%) brightness(95%)';
+    if (preset === 'soft') extra = 'brightness(108%) contrast(92%) blur(0.3px)';
+    if (preset === 'bw') extra = 'grayscale(100%) contrast(120%)';
+
+    return `brightness(${bright}%) contrast(${contrast}%) saturate(${sat}%) ${extra}`;
+  }
+
+  function drawFrame() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#061218';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    if (uploadedImage) {
+      ctx.save();
+      ctx.filter = getCanvasFilter();
+
+      const scaleFactor = imageZoom / 100;
+      const imgRatio = uploadedImage.width / uploadedImage.height;
+      const canvasRatio = canvas.width / canvas.height;
+
+      let drawW, drawH;
+      if (imgRatio > canvasRatio) {
+        drawW = canvas.width * scaleFactor;
+        drawH = drawW / imgRatio;
+      } else {
+        drawH = canvas.height * scaleFactor;
+        drawW = drawH * imgRatio;
+      }
+
+      const drawX = (canvas.width - drawW) / 2;
+      const drawY = (canvas.height - drawH) / 2;
+
+      ctx.save();
+      ctx.filter = 'blur(22px) brightness(45%)';
+      ctx.drawImage(uploadedImage, 0, 0, canvas.width, canvas.height);
+      ctx.restore();
+
+      ctx.drawImage(uploadedImage, drawX, drawY, drawW, drawH);
+      ctx.restore();
+    } else {
+      ctx.fillStyle = '#00e5ff';
+      ctx.font = 'bold 24px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('Meeko AI Studio', canvas.width / 2, canvas.height / 2 - 10);
+      ctx.fillStyle = '#90a4ae';
+      ctx.font = '14px sans-serif';
+      ctx.fillText('Tap "Add Image" & "Add Audio" above', canvas.width / 2, canvas.height / 2 + 18);
+    }
+
+    renderActiveEffect();
+
+    const text = document.getElementById('overlayText').value.trim();
+    if (text) {
+      ctx.save();
+      const fontSize = Math.max(22, Math.round(canvas.width * 0.045));
+      ctx.font = `bold ${fontSize}px sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.55)';
+      const textWidth = ctx.measureText(text).width + 36;
+      const boxY = canvas.height * 0.78;
+      ctx.beginPath();
+      ctx.roundRect((canvas.width - textWidth) / 2, boxY - fontSize, textWidth, fontSize + 18, 14);
+      ctx.fill();
+
+      ctx.fillStyle = '#ffffff';
+      ctx.shadowColor = 'rgba(0, 229, 255, 0.8)';
+      ctx.shadowBlur = 8;
+      ctx.fillText(text, canvas.width / 2, boxY);
+      ctx.restore();
+    }
+  }
+
+  function renderActiveEffect() {
+    if (currentEffect === 'none') return;
+
+    if (currentEffect === 'clouds') {
+      ctx.save();
+      clouds.forEach(c => {
+        c.x += c.speed;
+        if (c.x - c.size * 2 > canvas.width) c.x = -c.size * 2;
+        const grad = ctx.createRadialGradient(c.x, c.y, 10, c.x, c.y, c.size);
+        grad.addColorStop(0, 'rgba(255, 255, 255, 0.35)');
+        grad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.arc(c.x, c.y, c.size, 0, Math.PI * 2);
+        ctx.arc(c.x + c.size * 0.6, c.y + 10, c.size * 0.8, 0, Math.PI * 2);
+        ctx.arc(c.x - c.size * 0.5, c.y + 12, c.size * 0.7, 0, Math.PI * 2);
+        ctx.fill();
+      });
+      ctx.restore();
+      return;
+    }
+
+    if (currentEffect === 'fog') {
+      ctx.save();
+      clouds.forEach(c => {
+        c.x += c.speed * 0.5;
+        if (c.x - c.size * 2.5 > canvas.width) c.x = -c.size * 2.5;
+        const grad = ctx.createRadialGradient(c.x, canvas.height * 0.8, 20, c.x, canvas.height * 0.8, c.size * 1.8);
+        grad.addColorStop(0, 'rgba(220, 240, 255, 0.25)');
+        grad.addColorStop(1, 'rgba(220, 240, 255, 0)');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, canvas.height * 0.5, canvas.width, canvas.height * 0.5);
+      });
+      ctx.restore();
+      return;
+    }
+
+    if (currentEffect === 'glow') {
+      ctx.save();
+      const grad = ctx.createRadialGradient(canvas.width * 0.8, canvas.height * 0.12, 10, canvas.width * 0.8, canvas.height * 0.12, canvas.width * 0.75);
+      grad.addColorStop(0, 'rgba(255, 224, 130, 0.5)');
+      grad.addColorStop(0.5, 'rgba(255, 183, 77, 0.18)');
+      grad.addColorStop(1, 'rgba(255, 183, 77, 0)');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.restore();
+      return;
+    }
+
+    particles.forEach(p => {
+      if (currentEffect === 'snowfall') {
+        p.y += p.speedY;
+        p.x += Math.sin(p.y * 0.02) * 0.8;
+        ctx.fillStyle = `rgba(255, 255, 255, ${p.alpha})`;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fill();
+      } else if (currentEffect === 'roses') {
+        p.y += p.speedY;
+        p.x += Math.sin(p.y * 0.025) * 1.4;
+        ctx.font = `${Math.round(p.r * 4.5)}px sans-serif`;
+        ctx.fillText('🌹', p.x, p.y);
+      } else if (currentEffect === 'sakura') {
+        p.y += p.speedY * 0.9;
+        p.x += Math.sin(p.y * 0.025) * 1.5;
+        ctx.font = `${Math.round(p.r * 4.2)}px sans-serif`;
+        ctx.fillText('🌸', p.x, p.y);
+      } else if (currentEffect === 'sunflowers') {
+        p.y += p.speedY * 0.95;
+        p.x += Math.cos(p.y * 0.02) * 1.3;
+        ctx.font = `${Math.round(p.r * 4.3)}px sans-serif`;
+        ctx.fillText('🌻', p.x, p.y);
+      } else if (currentEffect === 'butterflies') {
+        p.y -= p.speedY * 0.75;
+        p.x += Math.sin(Date.now() * 0.005 + p.phase) * 2.2;
+        ctx.font = `${Math.round(p.r * 4.4)}px sans-serif`;
+        ctx.fillText('🦋', p.x, p.y);
+      } else if (currentEffect === 'leaves') {
+        p.y += p.speedY * 1.1;
+        p.x += Math.sin(p.y * 0.03) * 1.8;
+        ctx.font = `${Math.round(p.r * 4.2)}px sans-serif`;
+        ctx.fillText('🍁', p.x, p.y);
+      } else if (currentEffect === 'feathers') {
+        p.y += p.speedY * 0.65;
+        p.x += Math.sin(p.y * 0.02 + p.phase) * 1.6;
+        ctx.font = `${Math.round(p.r * 4.2)}px sans-serif`;
+        ctx.fillText('🪶', p.x, p.y);
+      } else if (currentEffect === 'rain') {
+        p.y += p.speedY * 5.5;
+        p.x -= 1.2;
+        ctx.strokeStyle = 'rgba(179, 229, 252, 0.6)';
+        ctx.lineWidth = 1.6;
+        ctx.beginPath();
+        ctx.moveTo(p.x, p.y);
+        ctx.lineTo(p.x - 3, p.y + 18);
+        ctx.stroke();
+      } else if (currentEffect === 'fireflies') {
+        p.y -= p.speedY * 0.45;
+        p.x += Math.sin(Date.now() * 0.003 + p.phase) * 1.1;
+        const glowAlpha = 0.3 + Math.abs(Math.sin(Date.now() * 0.005 + p.phase)) * 0.7;
+        ctx.fillStyle = `rgba(255, 215, 64, ${glowAlpha})`;
+        ctx.shadowColor = '#ffd740';
+        ctx.shadowBlur = 10;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r * 0.9, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.shadowBlur = 0;
+      } else if (currentEffect === 'stars') {
+        const starAlpha = 0.2 + Math.abs(Math.sin(Date.now() * 0.004 + p.phase)) * 0.8;
+        ctx.fillStyle = `rgba(0, 229, 255, ${starAlpha})`;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r * 0.85, 0, Math.PI * 2);
+        ctx.fill();
+      } else if (currentEffect === 'bubbles') {
+        p.y -= p.speedY * 0.85;
+        p.x += Math.sin(p.y * 0.02) * 0.9;
+        ctx.strokeStyle = 'rgba(128, 222, 234, 0.65)';
+        ctx.lineWidth = 1.4;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r * 1.8, 0, Math.PI * 2);
+        ctx.stroke();
+      } else if (currentEffect === 'hearts') {
+        p.y -= p.speedY * 0.85;
+        p.x += Math.sin(p.y * 0.03) * 1.0;
+        ctx.font = `${Math.round(p.r * 4.2)}px sans-serif`;
+        ctx.fillText('💖', p.x, p.y);
+      } else if (currentEffect === 'confetti') {
+        p.y += p.speedY * 1.4;
+        p.x += Math.sin(p.y * 0.04) * 1.5;
+        p.angle += p.spin;
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.angle);
+        ctx.fillStyle = p.confettiColor;
+        ctx.fillRect(-p.r, -p.r * 0.6, p.r * 2, p.r * 1.2);
+        ctx.restore();
+      }
+
+      if (p.y > canvas.height + 25) { p.y = -20; p.x = Math.random() * canvas.width; }
+      if (p.y < -25) { p.y = canvas.height + 20; p.x = Math.random() * canvas.width; }
+      if (p.x > canvas.width + 20) p.x = -15;
+      if (p.x < -20) p.x = canvas.width + 15;
+    });
+  }
+
+  function animateLoop() {
+    drawFrame();
+    requestAnimationFrame(animateLoop);
+  }
+
+  async function generateAICaption() {
+    const btn = document.getElementById('aiCaptionBtn');
+    const provider = localStorage.getItem('meeko_ai_provider') || 'offline';
+    const apiKey = localStorage.getItem('meeko_api_key') || '';
+
+    btn.textContent = '⏳ Thinking...';
+
+    if (provider === 'offline' || !apiKey) {
+      const randomLine = offlineCaptions[Math.floor(Math.random() * offlineCaptions.length)];
+      document.getElementById('overlayText').value = randomLine;
+      btn.textContent = '🤖 AI Caption';
+      return;
+    }
+
+    try {
+      const prompt = "Write one short, emotional 1-line Urdu poetry or aesthetic caption (max 8 words) for a photo video status. Return only the line.";
+      let generated = "";
+
+      if (provider === 'gemini') {
+        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+        });
+        const data = await res.json();
+        generated = data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
+      } else if (provider === 'groq' || provider === 'openai' || provider === 'openrouter') {
+        const endpoints = {
+          groq: 'https://api.groq.com/openai/v1/chat/completions',
+          openai: 'https://api.openai.com/v1/chat/completions',
+          openrouter: 'https://openrouter.ai/api/v1/chat/completions'
+        };
+        const models = {
+          groq: 'llama-3.1-8b-instant',
+          openai: 'gpt-4o-mini',
+          openrouter: 'google/gemini-2.0-flash-lite-preview-02-05:free'
+        };
+        const res = await fetch(endpoints[provider], {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${apiKey}`
+          },
+          body: JSON.stringify({
+            model: models[provider],
+            messages: [{ role: 'user', content: prompt }]
+          })
+        });
+        const data = await res.json();
+        generated = data?.choices?.[0]?.message?.content || "";
+      }
+
+      document.getElementById('overlayText').value = generated.trim() || offlineCaptions[0];
+    } catch (err) {
+      document.getElementById('overlayText').value = offlineCaptions[0];
+    }
+    btn.textContent = '🤖 AI Caption';
+  }
+
+  function toggleAudioPreview() {
+    const audio = document.getElementById('audioPlayer');
+    const btn = document.getElementById('playAudioBtn');
+    if (!audio.src) {
+      alert('پہلے "Add Audio" پر کلک کر کے کوئی گانا یا آڈیو منتخب کریں۔');
+      return;
+    }
+
+    if (isPlayingAudio) {
+      audio.pause();
+      isPlayingAudio = false;
+      btn.textContent = '▶️ Play Audio Preview';
+    } else {
+      currentLoopIteration = 1;
+      audio.currentTime = 0;
+      audio.play();
+      isPlayingAudio = true;
+      btn.textContent = `⏸️ Pause (Loop 1/${loopCount})`;
+
+      audio.onended = () => {
+        if (currentLoopIteration < loopCount) {
+          currentLoopIteration++;
+          btn.textContent = `⏸️ Pause (Loop ${currentLoopIteration}/${loopCount})`;
+          audio.currentTime = 0;
+          audio.play();
+        } else {
+          isPlayingAudio = false;
+          btn.textContent = '▶️ Play Audio Preview';
+        }
+      };
+    }
+  }
+
+  function saveHDPhoto() {
+    drawFrame();
+    const link = document.createElement('a');
+    link.download = `Meeko_HD_Photo_${Date.now()}.png`;
+    link.href = canvas.toDataURL('image/png', 1.0);
+    link.click();
+  }
+
+  async function exportVideo() {
+    if (!uploadedImage) {
+      alert('براہِ کرم پہلے تصویر (Add Image) منتخب کریں۔');
+      return;
+    }
+    if (isExporting) return;
+
+    changeAspectRatio();
+    isExporting = true;
+    exportCancelled = false;
+
+    const progressBox = document.getElementById('exportProgressBox');
+    const progressFill = document.getElementById('exportProgressFill');
+    const statusText = document.getElementById('exportStatusText');
+    const percentText = document.getElementById('exportPercentText');
+    progressBox.style.display = 'block';
+
+    const canvasStream = canvas.captureStream(30);
+    let combinedStream = canvasStream;
+    let audioCtx = null;
+    const audioEl = document.getElementById('audioPlayer');
+
+    if (audioEl.src) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const source = audioCtx.createMediaElementSource(audioEl);
+      const dest = audioCtx.createMediaStreamDestination();
+
+      if (document.getElementById('cleanAudioCheck').checked) {
+        const highpass = audioCtx.createBiquadFilter();
+        highpass.type = 'highpass';
+        highpass.frequency.value = 85;
+
+        const lowpass = audioCtx.createBiquadFilter();
+        lowpass.type = 'lowpass';
+        lowpass.frequency.value = 14000;
+
+        source.connect(highpass);
+        highpass.connect(lowpass);
+        lowpass.connect(dest);
+        lowpass.connect(audioCtx.destination);
+      } else {
+        source.connect(dest);
+        source.connect(audioCtx.destination);
+      }
+
+      combinedStream = new MediaStream([
+        ...canvasStream.getVideoTracks(),
+        ...dest.stream.getAudioTracks()
+      ]);
+    }
+
+    const chunks = [];
+    mediaRecorder = new MediaRecorder(combinedStream, { mimeType: 'video/webm' });
+    mediaRecorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
+
+    mediaRecorder.onstop = () => {
+      const blob = new Blob(chunks, { type: 'video/webm' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Meeko_Loop_Video_${loopCount}x_${Date.now()}.webm`;
+      a.click();
+
+      isExporting = false;
+      progressBox.style.display = 'none';
+      if (audioEl.src) {
+        audioEl.pause();
+        audioEl.currentTime = 0;
+      }
+    };
+
+    mediaRecorder.start();
+
+    if (audioEl.src) {
+      let playedLoops = 0;
+      const totalLoops = loopCount;
+
+      const playNextLoop = () => {
+        if (exportCancelled || playedLoops >= totalLoops) {
+          if (mediaRecorder.state !== 'inactive') mediaRecorder.stop();
+          return;
+        }
+        playedLoops++;
+        const pct = Math.min(99, Math.round(((playedLoops - 1) / totalLoops) * 100));
+        statusText.textContent = `Recording Loop ${playedLoops} of ${totalLoops}...`;
+        percentText.textContent = pct + '%';
+        progressFill.style.width = pct + '%';
+
+        audioEl.currentTime = 0;
+        audioEl.play();
+        audioEl.onended = playNextLoop;
+      };
+
+      const timer = setInterval(() => {
+        if (!isExporting) { clearInterval(timer); return; }
+        const elapsed = ((playedLoops - 1) * audioDuration) + audioEl.currentTime;
+        const total = totalLoops * audioDuration;
+        const pct = Math.min(99, Math.round((elapsed / total) * 100));
+        percentText.textContent = pct + '%';
+        progressFill.style.width = pct + '%';
+      }, 400);
+
+      playNextLoop();
+    } else {
+      let sec = 0;
+      const timer = setInterval(() => {
+        sec++;
+        const pct = Math.round((sec / 5) * 100);
+        statusText.textContent = `Creating Visual Video (${sec}/5s)...`;
+        percentText.textContent = pct + '%';
+        progressFill.style.width = pct + '%';
+        if (sec >= 5 || exportCancelled) {
+          clearInterval(timer);
+          if (mediaRecorder.state !== 'inactive') mediaRecorder.stop();
+        }
+      }, 1000);
+    }
+  }
+
+  function cancelExport() {
+    exportCancelled = true;
+    if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+      mediaRecorder.stop();
+    }
+  }
+</script>
+</body>
+</html>
